@@ -25,7 +25,7 @@ export function index(query = null) {
   });
 }
 
-export function categoryList(search = null) {
+export function categoryList(search = '') {
   return request({
     url: `${env.api_url}/categories/list?search=${search}`,
     method: "get"

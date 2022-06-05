@@ -18,19 +18,18 @@
                 type="text"
                 label="Search"
                 placeholder="Search"
-                v-model="query.search"
+                v-model="query.search.term"
               >
               </base-input>
             </div>
-
             <div class="col-md-6">
-              <base-input
-                type="text"
-                label="Slug"
-                placeholder="Slug"
-                v-model="model.barcode"
-              >
-              </base-input>
+              <label for="category_id">Category</label>
+              <v-select
+                v-model="query.search.category_id"
+                :options="categories"
+                :reduce="category => category.id"
+                :placeholder="'--Category--'"
+              ></v-select>
             </div>
           </div>
 
@@ -72,6 +71,8 @@
           :columns="table.columns"
           :data="list"
           :editLink="editLink"
+          :remove="remove"
+          :modelName="modelName"
         >
         </l-table>
         <pagination
@@ -92,8 +93,9 @@ import Alert from '@/pages/Common/Component/Alert'
 import pagination from 'vue-pagination-2'
 import { index } from '@/api/product'
 import { Stretch, CubeShadow } from 'vue-loading-spinner'
+import { categoryList } from '@/api/category'
 
-const tableColumns = ['Id', 'Name', 'Barcode']
+const tableColumns = ['Id', 'Name', 'Barcode', 'Category']
 
 export default {
   components: {
@@ -110,11 +112,14 @@ export default {
       link: '/products/create',
       label: 'Add Product',
       editLink: '/products/',
+      remove: true,
+      modelName: 'products',
       fetchError: null,
       list: null,
       records: 0,
       loading: false,
-      btnText: 'Save',
+      btnText: 'Search',
+      categories: [],
       model: {
         name: 'Red',
         barcode: ''
@@ -122,7 +127,10 @@ export default {
       query: {
         page: 1,
         limit: 5,
-        search: ''
+        search: {
+          term: '',
+          category_id: ''
+        }
       },
       table: {
         columns: [...tableColumns]
@@ -130,9 +138,21 @@ export default {
     }
   },
   created () {
+    this.getCategories()
     this.getList()
   },
   methods: {
+    getCategories () {
+      categoryList()
+        .then(response => {
+          if (response.success) {
+            this.categories = response.data
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
     callback: function () {
       this.getList()
     },
@@ -140,7 +160,8 @@ export default {
       this.getList()
     },
     reset () {
-      this.query.search = ''
+      this.query.search.term = ''
+      this.query.search.category_id = ''
       this.query.page = 1
       this.query.limit = 5
     },

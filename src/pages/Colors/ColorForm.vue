@@ -134,7 +134,6 @@ export default {
       update(this.model)
         .then(response => {
           if (response.success) {
-            console.log('ok1')
             this.model = response.data
 
             this.fetchError = null

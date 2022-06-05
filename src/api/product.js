@@ -18,9 +18,8 @@ export function update(data) {
 
 export function index(query = null) {
   return request({
-    url: `${env.api_url}/products?page=${query.page}&limit=${query.limit}&search=${
-      query.search
-    }`,
+    url: `${env.api_url}/products?page=${query.page}&limit=${query.limit}&term=${
+      query.search.term}&category_id=${query.search.category_id}`,
     method: "get"
   });
 }

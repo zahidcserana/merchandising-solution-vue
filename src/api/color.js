@@ -8,6 +8,13 @@ export function view(id) {
   });
 }
 
+export function remove(id) {
+  return request({
+    url: `${env.api_url}/colors/${id}`,
+    method: "delete"
+  });
+}
+
 export function update(data) {
   return request({
     url: `${env.api_url}/colors/${data.id}`,

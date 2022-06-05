@@ -14,13 +14,29 @@
         <form class="m-login__form m-form" id="schedule_form">
           <div class="row">
             <div class="col-md-6">
-              <!-- <base-input
-                type="text"
-                label="Search"
-                placeholder="Search"
-                v-model="query.search"
+              <v-select
+                label="name"
+                :filterable="false"
+                v-model="query.search.product_id"
+                :reduce="product => product.id"
+                :options="products"
+                :placeholder="'--Product--'"
+                @search="onSearch"
               >
-              </base-input> -->
+                <template slot="no-options">
+                  type to search products
+                </template>
+                <template slot="option" slot-scope="option">
+                  <div class="d-center">
+                    {{ option.name }}
+                  </div>
+                </template>
+                <template slot="selected-option" slot-scope="option">
+                  <div class="selected d-center">
+                    {{ option.name }}
+                  </div>
+                </template>
+              </v-select>
             </div>
 
             <div class="col-md-6">
@@ -36,13 +52,13 @@
 
           <div class="text-center">
             <Stretch v-if="loading" />
-            <!-- <button
+            <button
               v-if="!loading"
               type="button"
               class="btn btn-info btn-fill"
               @click="search"
               v-html="btnText"
-            ></button> -->
+            ></button>
             &nbsp;
             <button
               v-if="!loading"
@@ -72,6 +88,8 @@
           :columns="table.columns"
           :data="list"
           :editLink="editLink"
+          :remove="remove"
+          :modelName="modelName"
         >
         </l-table>
         <pagination
@@ -92,20 +110,21 @@ import Alert from '@/pages/Common/Component/Alert'
 import pagination from 'vue-pagination-2'
 import { index } from '@/api/variantProduct'
 import { Stretch, CubeShadow } from 'vue-loading-spinner'
+import { instance } from '@/utils/auth'
+
+// const tableColumns = [
+//   'Id',
+//   'productid',
+//   'color id',
+//   'Size',
+//   'Quantity',
+//   'poquantity',
+//   'Ready Quantity',
+//   'Delivered Quantity',
+//   'Is Default'
+// ]
 
 const tableColumns = [
-  'Id',
-  'productid',
-  'color id',
-  'Size',
-  'Quantity',
-  'poquantity',
-  'Ready Quantity',
-  'Delivered Quantity',
-  'Is Default'
-]
-
-const myColumns = [
   { key: 'id', value: 'ID' },
   { key: 'product', value: 'Product', link: true },
   { key: 'color', value: 'Color', link: true },
@@ -132,11 +151,14 @@ export default {
       link: '/variants/create',
       label: 'Add Variant',
       editLink: '/variants/',
+      remove: true,
+      modelName: 'variant_products',
       fetchError: null,
       list: null,
       records: 0,
       loading: false,
-      btnText: 'Save',
+      btnText: 'Search',
+      products: [],
       model: {
         name: 'Red',
         barcode: ''
@@ -144,10 +166,12 @@ export default {
       query: {
         page: 1,
         limit: 5,
-        search: ''
+        search: {
+          product_id: ''
+        }
       },
       table: {
-        columns: [...myColumns]
+        columns: [...tableColumns]
       }
     }
   },
@@ -155,6 +179,18 @@ export default {
     this.getList()
   },
   methods: {
+    onSearch (search, loading) {
+      if (search.length) {
+        loading(true)
+        this.mySearchData(loading, search, this)
+      }
+    },
+    mySearchData (loading, search, vm) {
+      instance.get('products/list?search=' + search).then(response => {
+        vm.products = response.data.data
+        loading(false)
+      })
+    },
     callback: function () {
       this.getList()
     },
@@ -162,7 +198,8 @@ export default {
       this.getList()
     },
     reset () {
-      this.query.search = ''
+      this.query.search.product_id = ''
+      this.query.search.term = ''
       this.query.page = 1
       this.query.limit = 5
     },

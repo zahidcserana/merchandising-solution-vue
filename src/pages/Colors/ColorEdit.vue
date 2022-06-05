@@ -33,7 +33,7 @@ export default {
             this.modelInfo.name = response.data.name
             this.modelInfo.slug = response.data.slug
           } else {
-            this.showError(response.sccess)
+            this.showError(response.success)
           }
         })
         .catch(err => {

@@ -72,6 +72,8 @@
           :columns="table.columns"
           :data="list"
           :editLink="editLink"
+          :remove="remove"
+          :modelName="modelName"
         >
         </l-table>
         <pagination
@@ -114,7 +116,9 @@ export default {
       list: null,
       records: 0,
       loading: false,
-      btnText: 'Save',
+      remove: true,
+      modelName: 'categories',
+      btnText: 'Search',
       model: {
         name: 'Red',
         slug: ''

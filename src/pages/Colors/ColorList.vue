@@ -72,6 +72,8 @@
           :columns="table.columns"
           :data="list"
           :editLink="editLink"
+          :remove="remove"
+          :modelName="modelName"
         >
         </l-table>
         <pagination
@@ -112,11 +114,13 @@ export default {
       link: '/settings/colors/create',
       label: 'Add Color',
       editLink: '/settings/colors/',
+      remove: true,
+      modelName: 'colors',
       fetchError: null,
       list: null,
       records: 0,
       loading: false,
-      btnText: 'Save',
+      btnText: 'Search',
       model: {
         name: 'Red',
         slug: ''
@@ -150,6 +154,8 @@ export default {
       this.getList()
     },
     search () {
+      this.query.page = 1
+      this.query.limit = 5
       this.getList()
     },
     reset () {

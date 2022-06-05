@@ -163,6 +163,10 @@ export default {
         ready_quantity: null,
         delivered_quantity: null,
         is_default: false
+      },
+      updateModel: {
+        id: undefined,
+        quantity: null
       }
     }
   },
@@ -232,12 +236,11 @@ export default {
     },
     update () {
       this.loading = true
-      this.model.id = this.$route.params.id
-      update(this.model)
+      this.updateModel.id = this.$route.params.id
+      this.updateModel.quantity = this.model.quantity
+      update(this.updateModel)
         .then(response => {
           if (response.success) {
-            // this.model = response.data
-
             this.fetchError = null
             this.$notifications.success()
           } else {
